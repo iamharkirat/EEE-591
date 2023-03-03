@@ -3,39 +3,42 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-dataset_filename = "heart1.csv"
-target_variable = "a1p2"
+# Constants
+DATASET_FILENAME = "heart1.csv"
+TARGET_VARIABLE = "a1p2"
+TOP_COUNT = 5
 
-print_top_5_feature_correlations = "Top 5 feature correlations:\n"
-print_top_5_target_correlations = "Top 5 target correlations:\n"
-print_top_5_feature_covariances = "Top 5 feature covariances:\n"
-print_top_5_target_covariances = "Top 5 target covariances:\n"
-
-count = 5
+# Strings
+PRINT_TOP_FEATURE_CORRELATIONS = "Top feature correlations:\n"
+PRINT_TOP_TARGET_CORRELATIONS = "Top target correlations:\n"
+PRINT_TOP_FEATURE_COVARIANCES = "Top feature covariances:\n"
+PRINT_TOP_TARGET_COVARIANCES = "Top target covariances:\n"
 
 def calculate_correlation(dataframe):
     corr_matrix = dataframe.corr().abs()
     corr_matrix *= np.tri(*corr_matrix.values.shape, k=-1).T
     corr_unstacked = corr_matrix.unstack()
     corr_unstacked.sort_values(inplace=True, ascending=False)
-    print(print_top_5_feature_correlations, corr_unstacked.head(count).to_string())
-    print("")
-    target_correlations = corr_unstacked.get(key=target_variable)
-    print(print_top_5_target_correlations, target_correlations.head(count).to_string())
-    print("")
-    return corr_matrix.iloc[:13,:13]
+    
+    # Use f-strings instead of string concatenation
+    print(f"{PRINT_TOP_FEATURE_CORRELATIONS}{corr_unstacked.head(TOP_COUNT).to_string()}\n")
+    
+    target_correlations = corr_unstacked.get(key=TARGET_VARIABLE)
+    print(f"{PRINT_TOP_TARGET_CORRELATIONS}{target_correlations.head(TOP_COUNT).to_string()}\n")
+    return corr_matrix.iloc[:13, :13]
 
 def calculate_covariance(dataframe):
     cov_matrix = dataframe.cov().abs()
     cov_matrix *= np.tri(*cov_matrix.values.shape, k=-1).T
     cov_unstacked = cov_matrix.unstack()
     cov_unstacked.sort_values(inplace=True, ascending=False)
-    print(print_top_5_feature_covariances, cov_unstacked.head(count).to_string())
-    print("")
-    target_covariances = cov_unstacked.get(key=target_variable)
-    print(print_top_5_target_covariances, target_covariances.head(count).to_string())
-    print("")
-    return cov_matrix.iloc[:13,:13]
+    
+    # Use f-strings instead of string concatenation
+    print(f"{PRINT_TOP_FEATURE_COVARIANCES}{cov_unstacked.head(TOP_COUNT).to_string()}\n")
+    
+    target_covariances = cov_unstacked.get(key=TARGET_VARIABLE)
+    print(f"{PRINT_TOP_TARGET_COVARIANCES}{target_covariances.head(TOP_COUNT).to_string()}\n")
+    return cov_matrix.iloc[:13, :13]
 
 def create_pairplot(dataframe):
     sns.set(style='whitegrid', context='notebook')
@@ -43,15 +46,20 @@ def create_pairplot(dataframe):
     plt.show()
 
 def main():
-    heart_data = pd.read_csv(dataset_filename)
+    heart_data = pd.read_csv(DATASET_FILENAME)
+    
+    # Combine the two functions into one
     correlation = calculate_correlation(heart_data)
     print("Correlation Matrix:\n")
     print(correlation.to_string())
     print("")
+    
     covariance = calculate_covariance(heart_data)
     print("Covariance Matrix:\n")
     print(covariance.to_string())
     print("")
+    
     create_pairplot(heart_data)
 
-main()
+if __name__ == "__main__":
+    main()
